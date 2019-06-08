@@ -2585,6 +2585,7 @@ int64_t sunion(
     int num_retries=NUM_RETRIES)
 {
 
+    
     if(keys.size()<1){
         struct ErrorInfo errinfo;
         errinfo.errcode = ERROR_NOT_SUPPORT;
@@ -2600,6 +2601,7 @@ int64_t sunion(
     }
     else
     {    
+        const std::string key = cluster_mode()? keys[0]: std::string("");
         CommandArgs cmd_args;
         cmd_args.add_arg("SUNION");
         cmd_args.add_args(keys);
@@ -2608,7 +2610,7 @@ int64_t sunion(
         // Reply will be an array of members
         // all unique elements of the sets mentioned in keys vector above.
 
-        const RedisReplyHelper redis_reply = redis_command(false, num_retries, destinationkey, cmd_args, which);
+        const RedisReplyHelper redis_reply = redis_command(false, num_retries, key, cmd_args, which);
         
         //Copy the result in values
         if (REDIS_REPLY_ARRAY == redis_reply->type)

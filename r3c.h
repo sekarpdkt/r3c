@@ -741,6 +741,12 @@ public: // SET
             std::vector<std::string>* values,
             Node* which=NULL, int num_retries=NUM_RETRIES);
 
+    // Basiucally performs union operation of all keys and returns unique memer.
+    // Time complexity: O(N) where N is the total number of elements in all given sets.
+    // Input ==> keys is an array of set keys. Resutl is stored in reference vector values.
+    // Returns the members of the set resulting from the union of all the given sets.
+    int64_t sunion(const std::vector<std::string>& keys,std::vector<std::string>* values,Node* which=NULL,int num_retries=NUM_RETRIES);
+
     // Copies all members of source keys to destinationkey.
     // Time complexity: O(N) where N is the total number of elements in all given sets.
     // Returns the number of members that were in resulting set.

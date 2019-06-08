@@ -2574,6 +2574,49 @@ int64_t CRedisClient::sscan(
 }
 
 
+// Basiucally performs union operation of all keys and returns unique memer.
+// Time complexity: O(N) where N is the total number of elements in all given sets.
+// Input ==> keys is an array of set keys. Resutl is stored in reference vector values.
+// Returns the members of the set resulting from the union of all the given sets.
+int64_t sunion(
+    const std::vector<std::string>& keys,
+    std::vector<std::string>* values,
+    Node* which=NULL, 
+    int num_retries=NUM_RETRIES)
+{
+
+    if(keys.size()<1){
+        struct ErrorInfo errinfo;
+        errinfo.errcode = ERROR_NOT_SUPPORT;
+        errinfo.errmsg = "There must be minimum one key";
+        THROW_REDIS_EXCEPTION(errinfo);        
+    }
+    else if (cluster_mode() && keys_crossslots(keys))
+    {
+        struct ErrorInfo errinfo;
+        errinfo.errcode = ERROR_NOT_SUPPORT;
+        errinfo.errmsg = "CROSSSLOT not supported in cluster mode";
+        THROW_REDIS_EXCEPTION(errinfo);
+    }
+    else
+    {    
+        CommandArgs cmd_args;
+        cmd_args.add_arg("SUNION");
+        cmd_args.add_args(keys);
+        cmd_args.final();
+
+        // Reply will be an array of members
+        // all unique elements of the sets mentioned in keys vector above.
+
+        const RedisReplyHelper redis_reply = redis_command(false, num_retries, destinationkey, cmd_args, which);
+        
+        //Copy the result in values
+        if (REDIS_REPLY_ARRAY == redis_reply->type)
+            return get_values(redis_reply.get(), values);
+        return 0;
+    }        
+}
+
 // Copies all members of source keys to destinationkey.
 // Time complexity: O(N) where N is the total number of elements in all given sets.
 // Returns the number of members that were in resulting set.

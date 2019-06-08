@@ -2581,8 +2581,8 @@ int64_t CRedisClient::sscan(
 int64_t CRedisClient::sunion(
     const std::vector<std::string>& keys,
     std::vector<std::string>* values,
-    Node* which=NULL, 
-    int num_retries=NUM_RETRIES)
+    Node* which, 
+    int num_retries)
 {
 
     
